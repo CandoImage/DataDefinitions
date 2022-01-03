@@ -25,11 +25,15 @@ pimcore.plugin.datadefinitions.export.item = Class.create(pimcore.plugin.datadef
     providers: [],
 
     getSettings: function () {
+        var url = '/admin/class/get-tree'
+        if (this.data.fetcher === 'database') {
+            url = '/admin/data_definitions/export_definitions/get-tables'
+        }
         var classesStore = new Ext.data.JsonStore({
             autoDestroy: true,
             proxy: {
                 type: 'ajax',
-                url: '/admin/class/get-tree'
+                url: url
             },
             fields: ['text']
         });
