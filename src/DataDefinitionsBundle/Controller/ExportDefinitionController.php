@@ -373,6 +373,11 @@ class ExportDefinitionController extends ResourceController
                 'fieldtype' => 'input',
                 'title' => 'Children',
             ],
+            [
+                'name' => 'parentId',
+                'fieldtype' => 'numeric',
+                'title' => 'Parent Id'
+            ]
         ];
 
         $result = [];

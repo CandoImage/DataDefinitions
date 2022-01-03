@@ -64,6 +64,7 @@ final class ExportDefinitionType extends AbstractResourceType
             ->add('name', TextType::class)
             ->add('stopOnException', CheckboxType::class)
             ->add('fetchUnpublished', CheckboxType::class)
+            ->add('flatManyToMany', CheckboxType::class)
             ->add('failureNotificationDocument', IntegerType::class)
             ->add('successNotificationDocument', IntegerType::class)
             ->add('mapping', ExportMappingCollectionType::class);

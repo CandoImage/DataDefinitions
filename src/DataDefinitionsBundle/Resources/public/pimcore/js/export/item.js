@@ -127,6 +127,12 @@ pimcore.plugin.datadefinitions.export.item = Class.create(pimcore.plugin.datadef
                     checked: this.data.fetchUnpublished
                 },
                 {
+                    fieldLabel: t('data_definitions_fetcher_objects_flatten'),
+                    xtype: 'checkbox',
+                    name: 'flatManyToMany',
+                    checked: this.data.flatManyToMany
+                },
+                {
                     fieldLabel: t('data_definitions_failure_document'),
                     labelWidth: 350,
                     name: 'failureNotificationDocument',
