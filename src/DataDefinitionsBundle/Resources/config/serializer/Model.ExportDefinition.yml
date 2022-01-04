@@ -14,7 +14,3 @@ Wvision\Bundle\DataDefinitionsBundle\Model\ExportDefinition:
             expose: true
             type: boolean
             groups: [Detailed]
-        flatManyToMany:
-            expose: true
-            type: boolean
-            groups: [Detailed]

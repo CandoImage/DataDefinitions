@@ -131,7 +131,6 @@ class Dao extends Model\Dao\PhpArrayTable
                 'runner',
                 'stopOnException',
                 'fetchUnpublished',
-                'flatManyToMany',
                 'failureNotificationDocument',
                 'successNotificationDocument',
                 'fetcher',

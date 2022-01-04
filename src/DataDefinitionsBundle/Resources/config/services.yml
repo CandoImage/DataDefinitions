@@ -347,6 +347,10 @@ services:
         tags:
             - { name: data_definitions.fetcher, type: database }
 
+    Wvision\Bundle\DataDefinitionsBundle\Fetcher\CustomFetcher:
+        tags:
+            - { name: data_definitions.fetcher, type: custom }
+
     ### LOADER
     Wvision\Bundle\DataDefinitionsBundle\Loader\PrimaryKeyLoader:
         tags:

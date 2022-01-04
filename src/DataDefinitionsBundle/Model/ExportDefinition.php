@@ -32,11 +32,6 @@ class ExportDefinition extends AbstractDataDefinition implements ExportDefinitio
     public $fetchUnpublished = false;
 
     /**
-     * @var bool
-     */
-    public $flatManyToMany = false;
-
-    /**
      * {@inheritdoc}
      */
     public function getFetcher()
@@ -82,22 +77,6 @@ class ExportDefinition extends AbstractDataDefinition implements ExportDefinitio
     public function isFetchUnpublished(): bool
     {
         return $this->fetchUnpublished;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isFlatManyToMany(): bool
-    {
-        return $this->flatManyToMany;
-    }
-
-    /**
-     * @param bool $flatManyToMany
-     */
-    public function setFlatManyToMany(bool $flatManyToMany): void
-    {
-        $this->flatManyToMany = $flatManyToMany;
     }
 }
 
