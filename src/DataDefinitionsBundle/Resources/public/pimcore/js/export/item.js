@@ -296,8 +296,6 @@ pimcore.plugin.datadefinitions.export.item = Class.create(pimcore.plugin.datadef
     getFetcherPanelLayout: function (type) {
         if (type) {
             type = type.toLowerCase();
-            console.log(type);
-            console.log(pimcore.plugin.datadefinitions.fetchers);
             if (pimcore.plugin.datadefinitions.fetchers[type]) {
                 this.fetcher = new pimcore.plugin.datadefinitions.fetchers[type]();
 
