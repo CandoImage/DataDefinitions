@@ -46,6 +46,11 @@ final class ClassChoiceType extends AbstractType
                 $tableName = $table->getName();
                 $choices[$tableName] = $tableName;
             }
+            $tableViews = $connection->getSchemaManager()->listViews();
+            foreach ($tableViews as $view) {
+                $viewName = $view->getName();
+                $choices[$viewName] = $viewName;
+            }
         }
 
         $resolver->setDefaults([

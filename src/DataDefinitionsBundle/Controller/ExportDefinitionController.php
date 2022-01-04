@@ -348,6 +348,14 @@ class ExportDefinitionController extends ResourceController
                     'leaf' => true
                 ];
             }
+            $tableViews = $connection->getSchemaManager()->listViews();
+            foreach ($tableViews as $view) {
+                $tables[] = [
+                    'id' => $view->getName(),
+                    'text' => $view->getName(),
+                    'leaf' => true
+                ];
+            }
         }
         return $this->adminJson($tables);
     }
