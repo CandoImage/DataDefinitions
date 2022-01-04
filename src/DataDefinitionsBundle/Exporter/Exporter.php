@@ -23,6 +23,7 @@ use Wvision\Bundle\DataDefinitionsBundle\Event\ExportDefinitionEvent;
 use Wvision\Bundle\DataDefinitionsBundle\Exception\DoNotSetException;
 use Wvision\Bundle\DataDefinitionsBundle\Exception\UnexpectedValueException;
 use Wvision\Bundle\DataDefinitionsBundle\Fetcher\FetcherInterface;
+use Wvision\Bundle\DataDefinitionsBundle\Fetcher\MockupObject;
 use Wvision\Bundle\DataDefinitionsBundle\Getter\DynamicColumnGetterInterface;
 use Wvision\Bundle\DataDefinitionsBundle\Getter\GetterInterface;
 use Wvision\Bundle\DataDefinitionsBundle\Interpreter\InterpreterInterface;
@@ -85,7 +86,7 @@ final class Exporter implements ExporterInterface
      * @param ServiceRegistryInterface $getterRegistry
      * @param ServiceRegistryInterface $exportProviderRegistry
      * @param EventDispatcherInterface $eventDispatcher
-     * @param LoggerInterface          $logger
+     * @param LoggerInterface $logger
      */
     public function __construct(
         ServiceRegistryInterface $fetcherRegistry,
@@ -94,8 +95,9 @@ final class Exporter implements ExporterInterface
         ServiceRegistryInterface $getterRegistry,
         ServiceRegistryInterface $exportProviderRegistry,
         EventDispatcherInterface $eventDispatcher,
-        LoggerInterface $logger
-    ) {
+        LoggerInterface          $logger
+    )
+    {
         $this->fetcherRegistry = $fetcherRegistry;
         $this->runnerRegistry = $runnerRegistry;
         $this->interpreterRegistry = $interpreterRegistry;
@@ -159,18 +161,19 @@ final class Exporter implements ExporterInterface
     /**
      * @param ExportDefinitionInterface $definition
      * @param                           $params
-     * @param int                       $total
-     * @param FetcherInterface          $fetcher
-     * @param ExportProviderInterface   $provider
+     * @param int $total
+     * @param FetcherInterface $fetcher
+     * @param ExportProviderInterface $provider
      * @throws \Exception
      */
     private function runExport(
         ExportDefinitionInterface $definition,
-        $params,
-        int $total,
-        FetcherInterface $fetcher,
-        ExportProviderInterface $provider
-    ) {
+                                  $params,
+        int                       $total,
+        FetcherInterface          $fetcher,
+        ExportProviderInterface   $provider
+    )
+    {
         UnpublishedHelper::hideUnpublished(
             function () use ($definition, $params, $total, $fetcher, $provider) {
                 $count = 0;
@@ -237,18 +240,19 @@ final class Exporter implements ExporterInterface
 
     /**
      * @param ExportDefinitionInterface $definition
-     * @param Concrete                  $object
+     * @param Concrete $object
      * @param                           $params
-     * @param ExportProviderInterface   $provider
+     * @param ExportProviderInterface $provider
      * @return array
      * @throws \Exception
      */
     private function exportRow(
         ExportDefinitionInterface $definition,
-        Concrete $object,
-        $params,
-        ExportProviderInterface $provider
-    ): array {
+        Concrete                  $object,
+                                  $params,
+        ExportProviderInterface   $provider
+    ): array
+    {
         $data = [];
 
         $runner = null;
@@ -306,31 +310,36 @@ final class Exporter implements ExporterInterface
     }
 
     /**
-     * @param Concrete                  $object
-     * @param ExportMapping             $map
+     * @param Concrete $object
+     * @param ExportMapping $map
      * @param                           $data
      * @param ExportDefinitionInterface $definition
      * @param                           $params
-     * @param null|GetterInterface      $getter
+     * @param null|GetterInterface $getter
      * @return mixed|null
      * @throws DoNotSetException
      */
     private function getObjectValue(
-        Concrete $object,
-        ExportMapping $map,
-        $data,
+        Concrete                  $object,
+        ExportMapping             $map,
+                                  $data,
         ExportDefinitionInterface $definition,
-        $params,
-        ?GetterInterface $getter
-    ) {
+                                  $params,
+        ?GetterInterface          $getter
+    )
+    {
         $value = null;
 
         if (null !== $getter) {
             $value = $getter->get($object, $map, $data);
         } else {
-            $getter = "get".ucfirst($map->getFromColumn());
+            $getter = "get" . ucfirst($map->getFromColumn());
 
             if (method_exists($object, $getter)) {
+                $value = $object->$getter();
+            }
+            // if we use a MockupObject and not have a value, we can use the direct getter
+            if ($object instanceof MockupObject && !$value) {
                 $value = $object->$getter();
             }
         }
@@ -349,8 +358,7 @@ final class Exporter implements ExporterInterface
                         $params,
                         $map->getInterpreterConfig()
                     );
-                }
-                catch (UnexpectedValueException $ex) {
+                } catch (UnexpectedValueException $ex) {
                     $this->logger->info(sprintf('Unexpected Value from Interpreter "%s" with message "%s"', $map->getInterpreter(), $ex->getMessage()));
                 }
 
@@ -380,7 +388,7 @@ final class Exporter implements ExporterInterface
     /**
      * @return void
      */
-    public function stop() : void
+    public function stop(): void
     {
         $this->shouldStop = true;
     }

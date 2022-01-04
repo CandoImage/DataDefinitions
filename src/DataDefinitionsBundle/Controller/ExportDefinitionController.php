@@ -15,6 +15,8 @@
 namespace Wvision\Bundle\DataDefinitionsBundle\Controller;
 
 use CoreShop\Bundle\ResourceBundle\Controller\ResourceController;
+use Doctrine\DBAL\Schema\Column;
+use Pimcore\Db\Connection;
 use Pimcore\Model\DataObject;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
@@ -334,8 +336,20 @@ class ExportDefinitionController extends ResourceController
      */
     public function getTablesAction(Request $request)
     {
-        $manger = $this->getDoctrine()->getManager();
-        $managers = $this->getDoctrine()->getManagers();
+        $tables = [];
+        /** @var Connection $connection */
+        $connection = $this->getDoctrine()->getConnection();
+        if ($connection) {
+            $tableList = $connection->getSchemaManager()->listTables();
+            foreach ($tableList as $table) {
+                $tables[] = [
+                    'id' => $table->getName(),
+                    'text' => $table->getName(),
+                    'leaf' => true
+                ];
+            }
+        }
+        return $this->adminJson($tables);
     }
 
     /**
@@ -353,6 +367,25 @@ class ExportDefinitionController extends ResourceController
         if (!$definition instanceof ExportDefinitionInterface || !$definition->getClass()) {
             return $this->viewHandler->handle(['success' => false]);
         }
+        $fields = [];
+
+        if ($definition->getClass()) {
+            /** @var Connection $connection */
+            $connection = $this->getDoctrine()->getConnection();
+            $schema = $connection->getSchemaManager();
+            $columns = $schema->listTableColumns($definition->getClass());
+            foreach ($columns as $column) {
+                $resultField = $this->getDbFieldConfiguration($column);
+                $resultField->setType('object');
+                $fields[] = $resultField;
+            }
+        }
+        return $this->viewHandler->handle([
+            'success' => true,
+            'fields' => $fields,
+            'bricks' => [],
+            'fieldcollections' => [],
+        ]);
     }
 
     /**
@@ -437,6 +470,33 @@ class ExportDefinitionController extends ResourceController
         $fromColumn->setLabel($field->getTitle());
         $fromColumn->setFieldtype($field->getFieldtype());
         $fromColumn->setIdentifier($field->getName());
+        $fromColumn->setGroup($group);
+
+        return $fromColumn;
+    }
+
+    /**
+     * @param Column $column
+     * @param string $group
+     * @return FromColumn
+     */
+    protected function getDbFieldConfiguration(Column $column, $group = 'fields'): FromColumn
+    {
+        $fromColumn = new FromColumn();
+        $fromColumn->setLabel($column->getName());
+        // convert to pimcore datatype
+        switch ($column->getType()->getName()) {
+            case 'integer':
+                $type = 'numeric';
+                break;
+            case 'string':
+                $type = 'input';
+                break;
+            default:
+                $type = $column->getType()->getName();
+        }
+        $fromColumn->setFieldtype($type);
+        $fromColumn->setIdentifier($column->getName());
         $fromColumn->setGroup($group);
 
         return $fromColumn;
