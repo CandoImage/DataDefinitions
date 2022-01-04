@@ -189,7 +189,7 @@ class ExportDefinitionController extends ResourceController
                         foreach ($localizedFields as $localizedField) {
                             $localizedField = $this->getFieldConfiguration($localizedField);
 
-                            $localizedField->setGroup('localizedfield.'.strtolower($language));
+                            $localizedField->setGroup('localizedfield.' . strtolower($language));
                             $localizedField->setType('localizedfields');
                             $localizedField->setIdentifier(sprintf('%s~%s', $localizedField->getIdentifier(),
                                 $language));
@@ -218,7 +218,7 @@ class ExportDefinitionController extends ResourceController
                                     foreach ($fields as $brickField) {
                                         $resultField = $this->getFieldConfiguration($brickField);
 
-                                        $resultField->setGroup('objectbrick.'.$key);
+                                        $resultField->setGroup('objectbrick.' . $key);
                                         $resultField->setType('objectbricks');
                                         $resultField->setIdentifier(sprintf('objectbrick~%s~%s~%s', $field->getName(),
                                             $key, $resultField->getIdentifier()));
@@ -244,7 +244,7 @@ class ExportDefinitionController extends ResourceController
                         foreach ($fieldDefinition as $fieldcollectionField) {
                             $resultField = $this->getFieldConfiguration($fieldcollectionField);
 
-                            $resultField->setGroup('fieldcollection.'.$type);
+                            $resultField->setGroup('fieldcollection.' . $type);
                             $resultField->setType('fieldcollections');
                             $resultField->setIdentifier(sprintf('fieldcollection~%s~%s~%s', $field->getName(), $type,
                                 $resultField->getIdentifier()));
@@ -268,7 +268,7 @@ class ExportDefinitionController extends ResourceController
                     $allowedGroupIds = $field->getAllowedGroupIds();
 
                     if ($allowedGroupIds) {
-                        $list->setCondition('ID in ('.implode(',', $allowedGroupIds).') AND storeId = ?',
+                        $list->setCondition('ID in (' . implode(',', $allowedGroupIds) . ') AND storeId = ?',
                             [$field->getStoreId()]);
                     } else {
                         $list->setCondition('storeId = ?', [$field->getStoreId()]);
@@ -325,6 +325,34 @@ class ExportDefinitionController extends ResourceController
             'bricks' => $bricks,
             'fieldcollections' => $collections,
         ]);
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     */
+    public function getTablesAction(Request $request)
+    {
+        $manger = $this->getDoctrine()->getManager();
+        $managers = $this->getDoctrine()->getManagers();
+    }
+
+    /**
+     * Get Raw table columns
+     *
+     * @param Request $request
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     */
+    public function getDbColumnsAction(Request $request)
+    {
+        $id = $request->get('id');
+        $definition = $this->repository->find($id);
+
+        if (!$definition instanceof ExportDefinitionInterface || !$definition->getClass()) {
+            return $this->viewHandler->handle(['success' => false]);
+        }
     }
 
     /**
@@ -399,7 +427,7 @@ class ExportDefinitionController extends ResourceController
 
     /**
      * @param DataObject\ClassDefinition\Data $field
-     * @param string                          $group
+     * @param string $group
      * @return FromColumn
      */
     protected function getFieldConfiguration(DataObject\ClassDefinition\Data $field, $group = 'fields'): FromColumn
