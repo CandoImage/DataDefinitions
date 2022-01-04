@@ -396,6 +396,32 @@ class ExportDefinitionController extends ResourceController
         ]);
     }
 
+    public function getCustomServicesAction(Request $request)
+    {
+        $services = [];
+
+
+        return $this->adminJson($services);
+    }
+
+    public function getCustomColumnsAction(Request $request)
+    {
+        $id = $request->get('id');
+        $definition = $this->repository->find($id);
+
+        if (!$definition instanceof ExportDefinitionInterface || !$definition->getClass()) {
+            return $this->viewHandler->handle(['success' => false]);
+        }
+        $fields = [];
+
+        return $this->viewHandler->handle([
+            'success' => true,
+            'fields' => $fields,
+            'bricks' => [],
+            'fieldcollections' => [],
+        ]);
+    }
+
     /**
      * @return array
      */
