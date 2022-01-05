@@ -35,6 +35,7 @@ services:
     Wvision\Bundle\DataDefinitionsBundle\Exporter\Exporter:
         arguments:
             - '@data_definitions.registry.fetcher'
+            - '@data_definitions.registry.custom.fetcher'
             - '@data_definitions.registry.export_runner'
             - '@data_definitions.registry.interpreter'
             - '@data_definitions.registry.getter'
