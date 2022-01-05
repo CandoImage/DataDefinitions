@@ -16,38 +16,13 @@ namespace Wvision\Bundle\DataDefinitionsBundle\Fetcher;
 
 use Wvision\Bundle\DataDefinitionsBundle\Model\ExportDefinitionInterface;
 
-interface CustomFetcherInterface
+interface CustomFetcherInterface extends FetcherInterface
 {
     /**
      * @param ExportDefinitionInterface $definition
-     * @param $params
-     * @param array $configuration
      * @return array
      */
-    public function getColumns(ExportDefinitionInterface $definition, $params, array $configuration): array;
+    public function getColumns(ExportDefinitionInterface $definition): array;
 
-    /**
-     * @param ExportDefinitionInterface $definition
-     * @param $params
-     * @param int $limit
-     * @param int $offset
-     * @param array $configuration
-     * @return array
-     */
-    public function fetch(
-        ExportDefinitionInterface $definition,
-        $params,
-        int $limit,
-        int $offset,
-        array $configuration
-    ): array;
-
-    /**+
-     * @param ExportDefinitionInterface $definition
-     * @param $params
-     * @param array $configuration
-     * @return int
-     */
-    public function count(ExportDefinitionInterface $definition, $params, array $configuration): int;
 }
 

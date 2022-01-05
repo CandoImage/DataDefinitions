@@ -42,6 +42,11 @@ final class Exporter implements ExporterInterface
     /**
      * @var ServiceRegistryInterface
      */
+    private $customFetcherRegistry;
+
+    /**
+     * @var ServiceRegistryInterface
+     */
     private $runnerRegistry;
 
     /**
@@ -90,6 +95,7 @@ final class Exporter implements ExporterInterface
      */
     public function __construct(
         ServiceRegistryInterface $fetcherRegistry,
+        ServiceRegistryInterface $customFetcherRegistry,
         ServiceRegistryInterface $runnerRegistry,
         ServiceRegistryInterface $interpreterRegistry,
         ServiceRegistryInterface $getterRegistry,
@@ -99,6 +105,7 @@ final class Exporter implements ExporterInterface
     )
     {
         $this->fetcherRegistry = $fetcherRegistry;
+        $this->customFetcherRegistry = $customFetcherRegistry;
         $this->runnerRegistry = $runnerRegistry;
         $this->interpreterRegistry = $interpreterRegistry;
         $this->getterRegistry = $getterRegistry;
@@ -136,6 +143,15 @@ final class Exporter implements ExporterInterface
         if (!$this->fetcherRegistry->has($definition->getFetcher())) {
             throw new \InvalidArgumentException(sprintf('Export Definition %s has no valid fetcher configured',
                 $definition->getName()));
+        }
+
+        // check if we have a custom fetcher
+        if ($definition->getFetcher() === 'custom') {
+            if (!$this->customFetcherRegistry->has($definition->getClass())) {
+                throw new \InvalidArgumentException(sprintf('Export Definition %s has no valid custom fetcher service configured',
+                    $definition->getName()));
+            }
+            return $this->customFetcherRegistry->get($definition->getClass());
         }
 
         /** @var FetcherInterface $fetcher */

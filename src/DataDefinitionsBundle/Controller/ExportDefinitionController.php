@@ -15,6 +15,7 @@
 namespace Wvision\Bundle\DataDefinitionsBundle\Controller;
 
 use CoreShop\Bundle\ResourceBundle\Controller\ResourceController;
+use CoreShop\Component\Registry\ServiceRegistry;
 use Doctrine\DBAL\Schema\Column;
 use Pimcore\Db\Connection;
 use Pimcore\Model\DataObject;
@@ -22,6 +23,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Wvision\Bundle\DataDefinitionsBundle\Fetcher\CustomFetcherInterface;
 use Wvision\Bundle\DataDefinitionsBundle\Model\ExportDefinitionInterface;
 use Wvision\Bundle\DataDefinitionsBundle\Model\ExportMapping\FromColumn;
 
@@ -420,7 +422,13 @@ class ExportDefinitionController extends ResourceController
             return $this->viewHandler->handle(['success' => false]);
         }
         $fields = [];
-
+        /** @var ServiceRegistry $serviceRegistry */
+        $serviceRegistry = $this->get('data_definitions.registry.custom.fetcher');
+        if ($serviceRegistry->has($definition->getClass())) {
+            /** @var CustomFetcherInterface $service */
+            $service = $serviceRegistry->get($definition->getClass());
+            $fields = $service->getColumns($definition);
+        }
         return $this->viewHandler->handle([
             'success' => true,
             'fields' => $fields,
