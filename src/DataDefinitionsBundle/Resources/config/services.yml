@@ -116,6 +116,12 @@ services:
             - Wvision\Bundle\DataDefinitionsBundle\Fetcher\FetcherInterface
             - 'Import Definition Fetchers'
 
+    data_definitions.registry.custom.fetcher:
+        class: CoreShop\Component\Registry\ServiceRegistry
+        arguments:
+            - Wvision\Bundle\DataDefinitionsBundle\Fetcher\CustomFetcherInterface
+            - 'Import Definition Custom Fetchers'
+
     data_definitions.form.registry.fetcher:
         class: CoreShop\Bundle\ResourceBundle\Form\Registry\FormTypeRegistry
 

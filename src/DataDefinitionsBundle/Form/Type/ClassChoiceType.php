@@ -53,6 +53,12 @@ final class ClassChoiceType extends AbstractType
             }
         }
 
+        // also allow custom services
+        $taggedServices = \Pimcore::getKernel()->getContainer()->getParameter('data_definitions.custom.fetchers');
+        foreach ($taggedServices as $service) {
+            $choices[$service] = $service;
+        }
+
         $resolver->setDefaults([
             'choices' => $choices,
         ]);

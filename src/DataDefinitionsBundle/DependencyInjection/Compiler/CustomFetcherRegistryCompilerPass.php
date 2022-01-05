@@ -24,7 +24,7 @@ final class CustomFetcherRegistryCompilerPass extends RegisterRegistryTypePass
     {
         parent::__construct(
             'data_definitions.registry.custom.fetcher',
-            'data_definitions.form.registry.custom.fetcher',
+            'data_definitions.form.registry.fetcher',
             'data_definitions.custom.fetchers',
             self::CUSTOM_FETCHER_TAG
         );

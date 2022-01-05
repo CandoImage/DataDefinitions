@@ -399,7 +399,14 @@ class ExportDefinitionController extends ResourceController
     public function getCustomServicesAction(Request $request)
     {
         $services = [];
-
+        $taggedServices = $this->getParameter('data_definitions.custom.fetchers');
+        foreach ($taggedServices as $service) {
+            $services[] = [
+                'id' => $service,
+                'text' => $service,
+                'leaf' => true
+            ];
+        }
 
         return $this->adminJson($services);
     }
