@@ -157,6 +157,14 @@ class CsvProvider extends AbstractFileProvider implements ImportProviderInterfac
     }
 
     /**
+     * Several calls from in the same process needs a method to clear the export data
+     */
+    public function clearExportData()
+    {
+        $this->exportData = [];
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function provideArtifactStream($configuration, ExportDefinitionInterface $definition, $params)
