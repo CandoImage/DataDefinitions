@@ -56,6 +56,10 @@ class ObjectsFetcher implements FetcherInterface
         $classList = '\Pimcore\Model\DataObject\\'.ucfirst($class).'\Listing';
         $list = new $classList;
         $list->setUnpublished($definition->isFetchUnpublished());
+        // add also variants to export
+        if (isset($params['include_variants'])) {
+            $list->setObjectTypes([AbstractObject::OBJECT_TYPE_OBJECT, AbstractObject::OBJECT_TYPE_VARIANT, AbstractObject::OBJECT_TYPE_FOLDER]);
+        }
 
         $rootNode = null;
         $conditionFilters = [];
