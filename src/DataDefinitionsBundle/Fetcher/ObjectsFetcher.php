@@ -17,6 +17,7 @@ namespace Wvision\Bundle\DataDefinitionsBundle\Fetcher;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\DataObject\Listing;
+use Pimcore\Model\DataObject\AbstractObject;
 use Wvision\Bundle\DataDefinitionsBundle\Model\ExportDefinitionInterface;
 
 class ObjectsFetcher implements FetcherInterface
