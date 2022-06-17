@@ -186,6 +186,7 @@ abstract class AbstractProcessManagerListener
         if ($this->process) {
             if ($this->process->getStatus() === ProcessManagerBundle::STATUS_RUNNING) {
                 $this->process->setProgress($this->process->getTotal());
+                $this->process->setCompleted(time());
                 $this->process->setStatus(ProcessManagerBundle::STATUS_COMPLETED);
                 $this->process->save();
             }
