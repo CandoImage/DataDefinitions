@@ -39,6 +39,7 @@ services:
     Wvision\Bundle\DataDefinitionsBundle\Exporter\Exporter:
       arguments:
         - '@data_definitions.registry.fetcher'
+        - '@data_definitions.registry.custom.fetcher'
         - '@data_definitions.registry.export_runner'
         - '@data_definitions.registry.interpreter'
         - '@data_definitions.registry.getter'
@@ -120,6 +121,13 @@ services:
       arguments:
         - Wvision\Bundle\DataDefinitionsBundle\Fetcher\FetcherInterface
         - 'Import Definition Fetchers'
+
+    data_definitions.registry.custom.fetcher:
+        class: CoreShop\Component\Registry\ServiceRegistry
+        arguments:
+            - Wvision\Bundle\DataDefinitionsBundle\Fetcher\CustomFetcherInterface
+            - 'Import Definition Custom Fetchers'
+        public: true
 
     data_definitions.form.registry.fetcher:
       class: CoreShop\Bundle\ResourceBundle\Form\Registry\FormTypeRegistry
@@ -368,6 +376,14 @@ services:
     Wvision\Bundle\DataDefinitionsBundle\Fetcher\ObjectsFetcher:
       tags:
         - { name: data_definitions.fetcher, type: objects, form-type: Wvision\Bundle\DataDefinitionsBundle\Form\Type\Fetcher\ObjectsFetcherType }
+
+    Wvision\Bundle\DataDefinitionsBundle\Fetcher\DatabaseFetcher:
+        tags:
+            - { name: data_definitions.fetcher, type: database }
+
+    Wvision\Bundle\DataDefinitionsBundle\Fetcher\CustomFetcher:
+        tags:
+            - { name: data_definitions.fetcher, type: custom }
 
     ### LOADER
     Wvision\Bundle\DataDefinitionsBundle\Loader\PrimaryKeyLoader:

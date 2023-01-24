@@ -29,6 +29,7 @@ use Wvision\Bundle\DataDefinitionsBundle\Context\FetcherContextInterface;
 use Wvision\Bundle\DataDefinitionsBundle\Event\ExportDefinitionEvent;
 use Wvision\Bundle\DataDefinitionsBundle\Exception\UnexpectedValueException;
 use Wvision\Bundle\DataDefinitionsBundle\Fetcher\FetcherInterface;
+use Wvision\Bundle\DataDefinitionsBundle\Fetcher\MockupObject;
 use Wvision\Bundle\DataDefinitionsBundle\Getter\DynamicColumnGetterInterface;
 use Wvision\Bundle\DataDefinitionsBundle\Getter\GetterInterface;
 use Wvision\Bundle\DataDefinitionsBundle\Interpreter\InterpreterInterface;
@@ -45,6 +46,7 @@ final class Exporter implements ExporterInterface
 
     public function __construct(
         private ServiceRegistryInterface $fetcherRegistry,
+        private ServiceRegistryInterface $customFetcherRegistry,
         private ServiceRegistryInterface $runnerRegistry,
         private ServiceRegistryInterface $interpreterRegistry,
         private ServiceRegistryInterface $getterRegistry,
@@ -86,6 +88,15 @@ final class Exporter implements ExporterInterface
                     $definition->getName()
                 )
             );
+        }
+
+        // check if we have a custom fetcher
+        if ($definition->getFetcher() === 'custom') {
+            if (!$this->customFetcherRegistry->has($definition->getClass())) {
+                throw new \InvalidArgumentException(sprintf('Export Definition %s has no valid custom fetcher service configured',
+                    $definition->getName()));
+            }
+            return $this->customFetcherRegistry->get($definition->getClass());
         }
 
         /** @var FetcherInterface $fetcher */
@@ -270,6 +281,10 @@ final class Exporter implements ExporterInterface
             $getter = 'get'.ucfirst($map->getFromColumn());
 
             if (method_exists($object, $getter)) {
+                $value = $object->$getter();
+            }
+            // if we use a MockupObject and not have a value, we can use the direct getter
+            if ($object instanceof MockupObject && !$value) {
                 $value = $object->$getter();
             }
         }

@@ -118,6 +118,14 @@ class JsonProvider extends AbstractFileProvider implements ImportProviderInterfa
         $this->exportData[] = $data;
     }
 
+    /**
+     * Several calls from in the same process needs a method to clear the export data
+     */
+    public function clearExportData()
+    {
+        $this->exportData = [];
+    }
+
     public function provideArtifactStream($configuration, ExportDefinitionInterface $definition, array $params)
     {
         $stream = fopen('php://memory', 'rw+');

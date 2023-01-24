@@ -32,6 +32,13 @@ final class ProcessManagerExportListener extends AbstractProcessManagerListener
         $this->providerRegistry = $providerRegistry;
     }
 
+    public function onTotalEvent(DefinitionEventInterface $event): void
+    {
+        // we set this to null as we want to reset it if using multiple exports in a loop
+        $this->process = null;
+        parent::onTotalEvent($event);
+    }
+
     public function onFinishedEvent(DefinitionEventInterface $event): void
     {
         if (null !== $this->process) {

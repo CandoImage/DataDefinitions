@@ -22,6 +22,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader;
 use Wvision\Bundle\DataDefinitionsBundle\Cleaner\CleanerInterface;
 use Wvision\Bundle\DataDefinitionsBundle\DependencyInjection\Compiler\CleanerRegistryCompilerPass;
+use Wvision\Bundle\DataDefinitionsBundle\DependencyInjection\Compiler\CustomFetcherRegistryCompilerPass;
 use Wvision\Bundle\DataDefinitionsBundle\DependencyInjection\Compiler\ExportProviderRegistryCompilerPass;
 use Wvision\Bundle\DataDefinitionsBundle\DependencyInjection\Compiler\ExportRunnerRegistryCompilerPass;
 use Wvision\Bundle\DataDefinitionsBundle\DependencyInjection\Compiler\FetcherRegistryCompilerPass;
@@ -33,6 +34,7 @@ use Wvision\Bundle\DataDefinitionsBundle\DependencyInjection\Compiler\PersisterR
 use Wvision\Bundle\DataDefinitionsBundle\DependencyInjection\Compiler\ProviderRegistryCompilerPass;
 use Wvision\Bundle\DataDefinitionsBundle\DependencyInjection\Compiler\RunnerRegistryCompilerPass;
 use Wvision\Bundle\DataDefinitionsBundle\DependencyInjection\Compiler\SetterRegistryCompilerPass;
+use Wvision\Bundle\DataDefinitionsBundle\Fetcher\CustomFetcherInterface;
 use Wvision\Bundle\DataDefinitionsBundle\Fetcher\FetcherInterface;
 use Wvision\Bundle\DataDefinitionsBundle\Filter\FilterInterface;
 use Wvision\Bundle\DataDefinitionsBundle\Getter\GetterInterface;
@@ -97,6 +99,9 @@ class DataDefinitionsExtension extends AbstractModelExtension
         $container
             ->registerForAutoconfiguration(FetcherInterface::class)
             ->addTag(FetcherRegistryCompilerPass::FETCHER_TAG);
+        $container
+            ->registerForAutoconfiguration(CustomFetcherInterface::class)
+            ->addTag(CustomFetcherRegistryCompilerPass::CUSTOM_FETCHER_TAG);
         $container
             ->registerForAutoconfiguration(FilterInterface::class)
             ->addTag(FilterRegistryCompilerPass::FILTER_TAG);

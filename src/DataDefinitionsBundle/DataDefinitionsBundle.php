@@ -25,6 +25,7 @@ use Pimcore\Extension\Bundle\PimcoreBundleInterface;
 use Pimcore\HttpKernel\BundleCollection\BundleCollection;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Wvision\Bundle\DataDefinitionsBundle\DependencyInjection\Compiler\CleanerRegistryCompilerPass;
+use Wvision\Bundle\DataDefinitionsBundle\DependencyInjection\Compiler\CustomFetcherRegistryCompilerPass;
 use Wvision\Bundle\DataDefinitionsBundle\DependencyInjection\Compiler\ExportProviderRegistryCompilerPass;
 use Wvision\Bundle\DataDefinitionsBundle\DependencyInjection\Compiler\ExportRunnerRegistryCompilerPass;
 use Wvision\Bundle\DataDefinitionsBundle\DependencyInjection\Compiler\FetcherRegistryCompilerPass;
@@ -70,6 +71,7 @@ class DataDefinitionsBundle extends AbstractResourceBundle
         $builder->addCompilerPass(new LoaderRegistryCompilerPass());
         $builder->addCompilerPass(new GetterRegistryCompilerPass());
         $builder->addCompilerPass(new FetcherRegistryCompilerPass());
+        $builder->addCompilerPass(new CustomFetcherRegistryCompilerPass());
         $builder->addCompilerPass(new ExportProviderRegistryCompilerPass());
         $builder->addCompilerPass(new ExportRunnerRegistryCompilerPass());
         $builder->addCompilerPass(new ImportRuleConditionPass());

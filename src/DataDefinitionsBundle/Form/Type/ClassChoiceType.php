@@ -16,6 +16,7 @@ declare(strict_types=1);
 
 namespace Wvision\Bundle\DataDefinitionsBundle\Form\Type;
 
+use Pimcore\Db\Connection;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -33,6 +34,28 @@ final class ClassChoiceType extends AbstractType
         foreach ($classes as $class) {
             $className = $class->getName();
             $choices[$className] = $className;
+        }
+
+        // we also allow db tables in form
+        /** @var Connection $connection */
+        $connection = \Pimcore::getKernel()->getContainer()->get('database_connection');
+        if ($connection) {
+            $tableList = $connection->getSchemaManager()->listTables();
+            foreach ($tableList as $table) {
+                $tableName = $table->getName();
+                $choices[$tableName] = $tableName;
+            }
+            $tableViews = $connection->getSchemaManager()->listViews();
+            foreach ($tableViews as $view) {
+                $viewName = $view->getName();
+                $choices[$viewName] = $viewName;
+            }
+        }
+
+        // also allow custom services
+        $taggedServices = \Pimcore::getKernel()->getContainer()->getParameter('data_definitions.custom.fetchers');
+        foreach ($taggedServices as $service) {
+            $choices[$service] = $service;
         }
 
         $resolver->setDefaults([

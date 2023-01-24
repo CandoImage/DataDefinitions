@@ -17,6 +17,9 @@ declare(strict_types=1);
 namespace Wvision\Bundle\DataDefinitionsBundle\Controller;
 
 use CoreShop\Bundle\ResourceBundle\Controller\ResourceController;
+use CoreShop\Component\Registry\ServiceRegistry;
+use Doctrine\DBAL\Schema\Column;
+use Pimcore\Db\Connection;
 use Pimcore\Model\DataObject;
 use Pimcore\Tool;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -24,6 +27,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Wvision\Bundle\DataDefinitionsBundle\Fetcher\CustomFetcherInterface;
 use Wvision\Bundle\DataDefinitionsBundle\Model\ExportDefinitionInterface;
 use Wvision\Bundle\DataDefinitionsBundle\Model\ExportMapping\FromColumn;
 
@@ -171,7 +175,7 @@ class ExportDefinitionController extends ResourceController
                         foreach ($localizedFields as $localizedField) {
                             $localizedField = $this->getFieldConfiguration($localizedField);
 
-                            $localizedField->setGroup('localizedfield.'.strtolower($language));
+                            $localizedField->setGroup('localizedfield.' . strtolower($language));
                             $localizedField->setType('localizedfields');
                             $localizedField->setIdentifier(
                                 sprintf(
@@ -206,7 +210,7 @@ class ExportDefinitionController extends ResourceController
                                     foreach ($fields as $brickField) {
                                         $resultField = $this->getFieldConfiguration($brickField);
 
-                                        $resultField->setGroup('objectbrick.'.$key);
+                                        $resultField->setGroup('objectbrick.' . $key);
                                         $resultField->setType('objectbricks');
                                         $resultField->setIdentifier(
                                             sprintf(
@@ -238,7 +242,7 @@ class ExportDefinitionController extends ResourceController
                         foreach ($fieldDefinition as $fieldcollectionField) {
                             $resultField = $this->getFieldConfiguration($fieldcollectionField);
 
-                            $resultField->setGroup('fieldcollection.'.$type);
+                            $resultField->setGroup('fieldcollection.' . $type);
                             $resultField->setType('fieldcollections');
                             $resultField->setIdentifier(
                                 sprintf(
@@ -340,7 +344,116 @@ class ExportDefinitionController extends ResourceController
         ]);
     }
 
-    protected function getSystemFields(): array
+    /**
+     * @param Request $request
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     */
+    public function getTablesAction(Request $request)
+    {
+        $tables = [];
+        /** @var Connection $connection */
+        $connection = $this->getDoctrine()->getConnection();
+        if ($connection) {
+            $tableList = $connection->getSchemaManager()->listTables();
+            foreach ($tableList as $table) {
+                $tables[] = [
+                    'id' => $table->getName(),
+                    'text' => $table->getName(),
+                    'leaf' => true
+                ];
+            }
+            $tableViews = $connection->getSchemaManager()->listViews();
+            foreach ($tableViews as $view) {
+                $tables[] = [
+                    'id' => $view->getName(),
+                    'text' => $view->getName(),
+                    'leaf' => true
+                ];
+            }
+        }
+        return $this->adminJson($tables);
+    }
+
+    /**
+     * Get Raw table columns
+     *
+     * @param Request $request
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     */
+    public function getDbColumnsAction(Request $request)
+    {
+        $id = $request->get('id');
+        $definition = $this->repository->find($id);
+
+        if (!$definition instanceof ExportDefinitionInterface || !$definition->getClass()) {
+            return $this->viewHandler->handle(['success' => false]);
+        }
+        $fields = [];
+
+        if ($definition->getClass()) {
+            /** @var Connection $connection */
+            $connection = $this->getDoctrine()->getConnection();
+            $schema = $connection->getSchemaManager();
+            $columns = $schema->listTableColumns($definition->getClass());
+            foreach ($columns as $column) {
+                $resultField = $this->getDbFieldConfiguration($column);
+                $resultField->setType('object');
+                $fields[] = $resultField;
+            }
+        }
+        return $this->viewHandler->handle([
+            'success' => true,
+            'fields' => $fields,
+            'bricks' => [],
+            'fieldcollections' => [],
+        ]);
+    }
+
+    public function getCustomServicesAction(Request $request)
+    {
+        $services = [];
+        $taggedServices = $this->getParameter('data_definitions.custom.fetchers');
+        foreach ($taggedServices as $service) {
+            $services[] = [
+                'id' => $service,
+                'text' => $service,
+                'leaf' => true
+            ];
+        }
+
+        return $this->adminJson($services);
+    }
+
+    public function getCustomColumnsAction(Request $request)
+    {
+        $id = $request->get('id');
+        $definition = $this->repository->find($id);
+
+        if (!$definition instanceof ExportDefinitionInterface || !$definition->getClass()) {
+            return $this->viewHandler->handle(['success' => false]);
+        }
+        $fields = [];
+        /** @var ServiceRegistry $serviceRegistry */
+        $serviceRegistry = $this->get('data_definitions.registry.custom.fetcher');
+        if ($serviceRegistry->has($definition->getClass())) {
+            /** @var CustomFetcherInterface $service */
+            $service = $serviceRegistry->get($definition->getClass());
+            $fields = $service->getColumns($definition);
+        }
+        return $this->viewHandler->handle([
+            'success' => true,
+            'fields' => $fields,
+            'bricks' => [],
+            'fieldcollections' => [],
+        ]);
+    }
+
+    /**
+     * @return array
+     */
+    protected function getSystemFields()
     {
         $systemColumns = [
             [
@@ -383,6 +496,11 @@ class ExportDefinitionController extends ResourceController
                 'fieldtype' => 'input',
                 'title' => 'Children',
             ],
+            [
+                'name' => 'parentId',
+                'fieldtype' => 'numeric',
+                'title' => 'Parent Id'
+            ]
         ];
 
         $result = [];
@@ -409,6 +527,33 @@ class ExportDefinitionController extends ResourceController
         $fromColumn->setLabel($field->getTitle());
         $fromColumn->setFieldtype($field->getFieldtype());
         $fromColumn->setIdentifier($field->getName());
+        $fromColumn->setGroup($group);
+
+        return $fromColumn;
+    }
+
+    /**
+     * @param Column $column
+     * @param string $group
+     * @return FromColumn
+     */
+    protected function getDbFieldConfiguration(Column $column, $group = 'fields'): FromColumn
+    {
+        $fromColumn = new FromColumn();
+        $fromColumn->setLabel($column->getName());
+        // convert to pimcore datatype
+        switch ($column->getType()->getName()) {
+            case 'integer':
+                $type = 'numeric';
+                break;
+            case 'string':
+                $type = 'input';
+                break;
+            default:
+                $type = $column->getType()->getName();
+        }
+        $fromColumn->setFieldtype($type);
+        $fromColumn->setIdentifier($column->getName());
         $fromColumn->setGroup($group);
 
         return $fromColumn;

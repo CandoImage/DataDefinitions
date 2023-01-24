@@ -100,7 +100,7 @@ class FieldCollectionSetter implements SetterInterface, GetterInterface
         $fieldName = $config['field'];
         $class = $config['class'];
         $fieldCollectionClass = 'Pimcore\Model\DataObject\Fieldcollection\Data\\'.ucfirst($class);
-        $field = $keyParts[3];
+        $field = $config['keys'];
 
         $getter = sprintf('get%s', ucfirst($fieldName));
 

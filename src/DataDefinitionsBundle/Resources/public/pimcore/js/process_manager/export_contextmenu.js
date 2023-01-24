@@ -20,6 +20,9 @@ pimcore.plugin.datadefinitions.export.context_menu = Class.create(pimcore.plugin
         }
 
         var $this = this;
+        var _ = this, user = pimcore.globalmanager.get('user');
+        var hasExportMenu = user.isAllowed('w_vision_export_menu');
+
         Ext.create('Ext.data.Store', {
             model: 'Executable',
             proxy: {
@@ -50,7 +53,7 @@ pimcore.plugin.datadefinitions.export.context_menu = Class.create(pimcore.plugin
                         });
                     });
 
-                    if (exportMenu) {
+                    if (exportMenu && hasExportMenu) {
                         tree.add([
                             {xtype: 'menuseparator'},
                             {

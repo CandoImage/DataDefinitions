@@ -27,8 +27,20 @@ pimcore.plugin.datadefinitions.export.fields = Class.create({
             items: []
         });
 
+        var url = null;
+        switch (this.data.fetcher) {
+            case 'database':
+                url = '/admin/data_definitions/export_definitions/get-db-columns'
+                break;
+            case 'custom':
+                url = '/admin/data_definitions/export_definitions/get-custom-columns'
+                break;
+            default:
+                url = '/admin/data_definitions/export_definitions/get-columns'
+                break;
+        }
         Ext.Ajax.request({
-            url: '/admin/data_definitions/export_definitions/get-columns',
+            url: url,
             params: {
                 id: this.id
             },
