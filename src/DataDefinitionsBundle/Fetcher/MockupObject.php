@@ -9,9 +9,9 @@ use Pimcore\Model\DataObject\Concrete;
 class MockupObject extends Concrete
 {
     /**
-     * @var int
+     * @var int|null
      */
-    protected int $id;
+    protected ?int $id;
 
     /**
      * @var array
@@ -24,7 +24,7 @@ class MockupObject extends Concrete
     protected string $tableName;
 
 
-    public function __construct($id, $params)
+    public function __construct(?int $id, $params)
     {
         $this->id = $id;
         $this->params = $params;
