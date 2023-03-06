@@ -5,13 +5,13 @@ namespace Wvision\Bundle\DataDefinitionsBundle\Fetcher;
 use Doctrine\DBAL\Query\QueryBuilder;
 use Pimcore\Db\Connection;
 use Wvision\Bundle\DataDefinitionsBundle\Context\FetcherContextInterface;
+use Wvision\Bundle\DataDefinitionsBundle\Model\ExportDefinitionInterface;
 
 class DatabaseFetcher implements FetcherInterface
 {
-    // @TODO: this must be rested as the method parameters changed
     public function fetch(FetcherContextInterface $context, int $limit, int $offset)
     {
-        $queryBuilder = $this->getQueryBuilder($definition);
+        $queryBuilder = $this->getQueryBuilder($context->getDefinition());
         // set offset and limit
         $queryBuilder->setFirstResult($offset);
         $queryBuilder->setMaxResults($limit);
@@ -27,10 +27,9 @@ class DatabaseFetcher implements FetcherInterface
         return $mockupObjects;
     }
 
-    // @TODO: this must be rested as the method parameters changed
     public function count(FetcherContextInterface $context): int
     {
-        $queryBuilder = $this->getQueryBuilder($definition, true);
+        $queryBuilder = $this->getQueryBuilder($context->getDefinition(), true);
         return $queryBuilder->execute()->fetchColumn();
     }
 
