@@ -3,13 +3,13 @@
 namespace Wvision\Bundle\DataDefinitionsBundle\Fetcher;
 
 use Doctrine\DBAL\Query\QueryBuilder;
-use Pimcore\Db\Connection;
+use Pimcore\Db;
 use Wvision\Bundle\DataDefinitionsBundle\Context\FetcherContextInterface;
+use Wvision\Bundle\DataDefinitionsBundle\Model\ExportDefinitionInterface;
 
 class CustomFetcher implements FetcherInterface
 {
-    // @TODO: this must be rested as the method parameters changed
-    public function fetch(FetcherContextInterface $context, int $limit, int $offset)
+    public function fetch(FetcherContextInterface $context, int $limit, int $offset): array
     {
         $result = [];
         $mockupObjects = [];
@@ -21,7 +21,6 @@ class CustomFetcher implements FetcherInterface
         return $mockupObjects;
     }
 
-    // @TODO: this must be rested as the method parameters changed
     public function count(FetcherContextInterface $context): int
     {
         return 0;
@@ -29,9 +28,8 @@ class CustomFetcher implements FetcherInterface
 
     private function getData(ExportDefinitionInterface $definition, bool $count = false): QueryBuilder
     {
-        /** @var Connection $connection */
-        $connection = \Pimcore::getKernel()->getContainer()->get('database_connection');
-        $queryBuilder = new QueryBuilder($connection);
+        $db = Db::getConnection();
+        $queryBuilder = new QueryBuilder($db);
         $queryBuilder->setMaxResults(null);
         $queryBuilder->setFirstResult(0);
         $queryBuilder->from($definition->getClass());
