@@ -32,10 +32,14 @@ class DatabaseFetcher implements FetcherInterface
         return $mockupObjects;
     }
 
+    /**
+     * @throws \Doctrine\DBAL\Driver\Exception
+     * @throws Exception
+     */
     public function count(FetcherContextInterface $context): int
     {
         $queryBuilder = $this->getQueryBuilder($context->getDefinition(), true);
-        return $queryBuilder->execute()->fetchColumn();
+        return $queryBuilder->execute()->fetchOne();
     }
 
     private function getQueryBuilder(ExportDefinitionInterface $definition, bool $count = false): QueryBuilder
