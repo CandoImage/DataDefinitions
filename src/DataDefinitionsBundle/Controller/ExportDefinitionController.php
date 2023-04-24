@@ -40,6 +40,7 @@ class ExportDefinitionController extends ResourceController
         $runners = $this->getConfigRunners();
         $getters = $this->getConfigGetters();
         $fetchers = $this->getConfigFetchers();
+        $customFetchers = $this->getConfigCustomFetchers();
         $importRuleConditions = $this->getImportRuleConditions();
         $importRuleActions = $this->getImportRuleActions();
 
@@ -50,6 +51,7 @@ class ExportDefinitionController extends ResourceController
                 'runner' => array_keys($runners),
                 'getters' => array_keys($getters),
                 'fetchers' => array_keys($fetchers),
+                'customFetchers' => array_keys($customFetchers),
                 'import_rules' => [
                     'conditions' => array_keys($importRuleConditions),
                     'actions' => array_keys($importRuleActions),
@@ -414,7 +416,7 @@ class ExportDefinitionController extends ResourceController
     public function getCustomServicesAction(Request $request)
     {
         $services = [];
-        $taggedServices = $this->getParameter('data_definitions.custom.fetchers');
+        $taggedServices = $this->getConfigCustomFetchers();
         foreach ($taggedServices as $service) {
             $services[] = [
                 'id' => $service,
@@ -592,5 +594,10 @@ class ExportDefinitionController extends ResourceController
     protected function getImportRuleActions(): array
     {
         return $this->container->getParameter('data_definitions.import_rule.actions');
+    }
+
+    protected function getConfigCustomFetchers(): array
+    {
+        return $this->container->getParameter('data_definitions.custom.fetchers');
     }
 }
