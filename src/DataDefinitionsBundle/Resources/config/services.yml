@@ -31,7 +31,9 @@ services:
         - '@logger'
         - '@pimcore.model.factory'
         - '@coreshop.expression_language'
+        # START - CANDO CUSTOM CODE
         - '@parameter_bag'
+        # END - CANDO CUSTOM CODE
       tags:
         - { name: monolog.logger, channel: import_definition }
         - { name: 'kernel.event_listener', event: 'data_definitions.stop', method: 'stop' }
@@ -48,7 +50,9 @@ services:
         - '@Wvision\Bundle\DataDefinitionsBundle\Context\ContextFactoryInterface'
         - '@event_dispatcher'
         - '@logger'
+        # START - CANDO CUSTOM CODE
         - '@parameter_bag'
+        # END - CANDO CUSTOM CODE
       tags:
         - { name: monolog.logger, channel: export_definition }
         - { name: 'kernel.event_listener', event: 'data_definitions.stop', method: 'stop' }
