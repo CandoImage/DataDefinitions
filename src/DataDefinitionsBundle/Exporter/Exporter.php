@@ -23,6 +23,9 @@ use InvalidArgumentException;
 use Pimcore;
 use Pimcore\Model\DataObject\Concrete;
 use Psr\Log\LoggerInterface;
+// START - CANDO CUSTOM CODE
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+// START - CANDO CUSTOM CODE
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Wvision\Bundle\DataDefinitionsBundle\Context\ContextFactoryInterface;
 use Wvision\Bundle\DataDefinitionsBundle\Context\FetcherContextInterface;
@@ -53,7 +56,10 @@ final class Exporter implements ExporterInterface
         private ServiceRegistryInterface $exportProviderRegistry,
         private ContextFactoryInterface $contextFactory,
         private EventDispatcherInterface $eventDispatcher,
-        private LoggerInterface $logger
+        private LoggerInterface $logger,
+        // START - CANDO CUSTOM CODE
+        private ParameterBagInterface $parameterBag
+        // END - CANDO CUSTOM CODE
     ) {
 
     }
@@ -130,7 +136,10 @@ final class Exporter implements ExporterInterface
         UnpublishedHelper::hideUnpublished(
             function () use ($definition, $params, $total, $fetcher, $provider, $fetcherContext) {
                 $count = 0;
-                $perLoop = 50;
+                // START - CANDO CUSTOM CODE
+                // $perLoop = 50;
+                $perLoop = $this->parameterBag->get('data_definitions.gc_cycle');
+                // END - CANDO CUSTOM CODE
                 $perRun = ceil($total / $perLoop);
 
                 for ($i = 0; $i < $perRun; $i++) {
