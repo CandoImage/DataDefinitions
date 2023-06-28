@@ -42,7 +42,7 @@ class Configuration implements ConfigurationInterface
             ->children()
                 ->scalarNode('driver')->defaultValue(CoreShopResourceBundle::DRIVER_PIMCORE)->end()
                 // START - CANDO CUSTOM CODE
-                ->integerNode('gc_cycle')->defaultValue(50)->cannotBeEmpty()->end()
+                ->integerNode('gc_cycle')->defaultValue(50)->end()
                 // END - CANDO CUSTOM CODE
             ->end();
 
