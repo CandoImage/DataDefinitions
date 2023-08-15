@@ -127,8 +127,6 @@ class DataDefinitionsExtension extends AbstractModelExtension
             ->registerForAutoconfiguration(PersisterInterface::class)
             ->addTag(PersisterRegistryCompilerPass::PERSISTER_TAG);
 
-        // START - CANDO CUSTOM CODE
         $container->setParameter('data_definitions.gc_cycle', $config['gc_cycle']);
-        // END - CANDO CUSTOM CODE
     }
 }
