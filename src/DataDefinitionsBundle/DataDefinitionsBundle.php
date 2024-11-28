@@ -20,6 +20,8 @@ use Composer\InstalledVersions;
 use CoreShop\Bundle\ResourceBundle\AbstractResourceBundle;
 use CoreShop\Bundle\ResourceBundle\CoreShopResourceBundle;
 use CoreShop\Bundle\RuleBundle\CoreShopRuleBundle;
+use Pimcore\Bundle\AdminBundle\PimcoreAdminBundle;
+use Pimcore\Bundle\SimpleBackendSearchBundle\PimcoreSimpleBackendSearchBundle;
 use Pimcore\Extension\Bundle\Installer\InstallerInterface;
 use Pimcore\Extension\Bundle\PimcoreBundleInterface;
 use Pimcore\HttpKernel\BundleCollection\BundleCollection;
@@ -47,6 +49,11 @@ class DataDefinitionsBundle extends AbstractResourceBundle
         parent::registerDependentBundles($collection);
 
         $collection->addBundles([
+            new PimcoreAdminBundle(),
+            new PimcoreSimpleBackendSearchBundle()
+        ]);
+
+        $collection->addBundles([
             new CoreShopRuleBundle(),
         ], 3500);
     }
@@ -58,9 +65,9 @@ class DataDefinitionsBundle extends AbstractResourceBundle
         ];
     }
 
-    public function build(ContainerBuilder $builder): void
+    public function build(ContainerBuilder $container): void
     {
-        parent::build($builder);
+        parent::build($container);
 
         $builder->addCompilerPass(new CleanerRegistryCompilerPass());
         $builder->addCompilerPass(new FilterRegistryCompilerPass());

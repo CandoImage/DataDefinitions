@@ -21,6 +21,7 @@ use CoreShop\Component\Registry\ServiceRegistryInterface;
 use Exception;
 use InvalidArgumentException;
 use Pimcore;
+use Pimcore\Model\DataObject;
 use Pimcore\Model\DataObject\Concrete;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -128,6 +129,9 @@ final class Exporter implements ExporterInterface
         FetcherInterface $fetcher,
         ExportProviderInterface $provider
     ) {
+        $getInheritedValues = DataObject::getGetInheritedValues();
+        DataObject::setGetInheritedValues($definition->isEnableInheritance());
+
         UnpublishedHelper::hideUnpublished(
             function () use ($definition, $params, $total, $fetcher, $provider, $fetcherContext) {
                 $count = 0;
@@ -192,6 +196,8 @@ final class Exporter implements ExporterInterface
             },
             false === $definition->isFetchUnpublished()
         );
+
+        DataObject::setGetInheritedValues($getInheritedValues);
     }
 
     private function exportRow(
