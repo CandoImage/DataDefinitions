@@ -135,7 +135,7 @@ class XmlProvider extends AbstractFileProvider implements ImportProviderInterfac
                 throw new RuntimeException(sprintf('Passed XSLT file "%1$s" not found', $path));
             }
 
-            $extension = pathinfo($configuration['xsltPath'], PATHINFO_EXTENSION);
+            $extension = File::getFileExtension($configuration['xsltPath']);
             $workingPath = File::getLocalTempFilePath($extension);
             file_put_contents($workingPath, $storage->read($path));
 

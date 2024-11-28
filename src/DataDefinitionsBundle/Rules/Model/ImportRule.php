@@ -24,7 +24,7 @@ class ImportRule implements ImportRuleInterface
 
     protected int $id;
 
-    public function getId(): ?int
+    public function getId()
     {
         return $this->id;
     }

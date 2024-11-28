@@ -16,9 +16,6 @@ declare(strict_types=1);
 
 namespace Wvision\Bundle\DataDefinitionsBundle\Model;
 
-/**
- * @method ImportDefinition\Dao getDao()
- */
 class ImportDefinition extends AbstractDataDefinition implements ImportDefinitionInterface
 {
     /**
@@ -86,12 +83,7 @@ class ImportDefinition extends AbstractDataDefinition implements ImportDefinitio
      */
     public $persister;
 
-    public static function getById(string $name)
-    {
-        return static::getByName($name);
-    }
-
-    public static function getByName($id)
+    public static function getById($id)
     {
         $definitionEntry = new ImportDefinition();
         $definitionEntry->setId((int)$id);
@@ -99,7 +91,7 @@ class ImportDefinition extends AbstractDataDefinition implements ImportDefinitio
          * @var \Wvision\Bundle\DataDefinitionsBundle\Model\ExportDefinition\Dao|\Wvision\Bundle\DataDefinitionsBundle\Model\ImportDefinition\Dao
          */
         $dao = $definitionEntry->getDao();
-        $dao->getByName($id);
+        $dao->getById($id);
 
         return $definitionEntry;
     }
