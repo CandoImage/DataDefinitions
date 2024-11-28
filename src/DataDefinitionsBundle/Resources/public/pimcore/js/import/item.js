@@ -25,6 +25,10 @@ pimcore.plugin.datadefinitions.import.item = Class.create(pimcore.plugin.datadef
 
     providers: [],
 
+    saveDisabled: function () {
+        return !this.data.isWriteable;
+    },
+
     getSettings: function () {
         var classesStore = new Ext.data.JsonStore({
             autoDestroy: true,

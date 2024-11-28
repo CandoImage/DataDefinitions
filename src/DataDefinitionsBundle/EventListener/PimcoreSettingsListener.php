@@ -14,18 +14,16 @@
 
 declare(strict_types=1);
 
-namespace Wvision\Bundle\DataDefinitionsBundle\Rules\Model;
+namespace Wvision\Bundle\DataDefinitionsBundle\EventListener;
 
-use CoreShop\Component\Rule\Model\RuleTrait;
+use Pimcore\Bundle\AdminBundle\Event\IndexActionSettingsEvent;
+use Wvision\Bundle\DataDefinitionsBundle\Model\ExportDefinition;
+use Wvision\Bundle\DataDefinitionsBundle\Model\ImportDefinition;
 
-class ImportRule implements ImportRuleInterface
+class PimcoreSettingsListener
 {
-    use RuleTrait;
-
-    protected int $id;
-
-    public function getId(): ?int
+    public function indexSettings(IndexActionSettingsEvent $settingsEvent): void
     {
-        return $this->id;
+
     }
 }
