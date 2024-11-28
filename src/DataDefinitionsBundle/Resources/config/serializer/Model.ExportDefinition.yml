@@ -2,10 +2,6 @@ Wvision\Bundle\DataDefinitionsBundle\Model\ExportDefinition:
   exclusion_policy: ALL
   xml_root_name: export_definition
   properties:
-    enableInheritance:
-      expose: true
-      type: boolean
-      groups: [Detailed]
     fetcher:
       expose: true
       type: string
@@ -18,8 +14,3 @@ Wvision\Bundle\DataDefinitionsBundle\Model\ExportDefinition:
       expose: true
       type: boolean
       groups: [ Detailed ]
-  virtual_properties:
-    isWriteable:
-      exp: object.isWriteable()
-      type: boolean
-      serialized_name: isWriteable

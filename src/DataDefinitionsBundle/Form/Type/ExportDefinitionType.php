@@ -52,7 +52,6 @@ final class ExportDefinitionType extends AbstractResourceType
             ->add('runner', ExportRunnerChoiceType::class)
             ->add('name', TextType::class)
             ->add('stopOnException', CheckboxType::class)
-            ->add('enableInheritance', CheckboxType::class)
             ->add('fetchUnpublished', CheckboxType::class)
             ->add('failureNotificationDocument', IntegerType::class)
             ->add('successNotificationDocument', IntegerType::class)

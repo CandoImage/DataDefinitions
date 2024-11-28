@@ -18,16 +18,10 @@ namespace Wvision\Bundle\DataDefinitionsBundle\Model;
 
 use Pimcore\Model\AbstractModel;
 
-/**
- * @method bool isWriteable()
- * @method string getWriteTarget()
- * @method void save()
- * @method void delete()
- */
 abstract class AbstractDataDefinition extends AbstractModel implements DataDefinitionInterface
 {
     /**
-     * @var int|string|null
+     * @var int
      */
     public $id;
 
@@ -86,7 +80,7 @@ abstract class AbstractDataDefinition extends AbstractModel implements DataDefin
      */
     public $successNotificationDocument;
 
-    public function getId(): int|string|null
+    public function getId()
     {
         return $this->id;
     }
@@ -134,8 +128,6 @@ abstract class AbstractDataDefinition extends AbstractModel implements DataDefin
     public function setName($name)
     {
         $this->name = $name;
-
-        $this->setId($name);
     }
 
     public function getMapping()

@@ -24,10 +24,6 @@ pimcore.plugin.datadefinitions.export.item = Class.create(pimcore.plugin.datadef
 
     providers: [],
 
-    saveDisabled: function () {
-        return !this.data.isWriteable;
-    },
-
     getSettings: function () {
 
         var url = null;
@@ -136,12 +132,6 @@ pimcore.plugin.datadefinitions.export.item = Class.create(pimcore.plugin.datadef
                     xtype: 'checkbox',
                     name: 'stopOnException',
                     checked: this.data.stopOnException
-                },
-                {
-                    fieldLabel: t('data_definitions_enable_inheritance'),
-                    xtype: 'checkbox',
-                    name: 'enableInheritance',
-                    checked: this.data.enableInheritance
                 },
                 {
                     fieldLabel: t('data_definitions_fetcher_objects_unpublished'),

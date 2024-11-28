@@ -17,16 +17,16 @@ use Pimcore\Kernel as PimcoreKernel;
 
 class Kernel extends PimcoreKernel
 {
-    public function registerBundlesToCollection(BundleCollection $collection): void
+    public function registerBundlesToCollection(BundleCollection $collection)
     {
         $collection->addBundle(new \Wvision\Bundle\DataDefinitionsBundle\DataDefinitionsBundle());
         $collection->addBundle(new \FriendsOfBehat\SymfonyExtension\Bundle\FriendsOfBehatSymfonyExtensionBundle());
     }
 
-    public function boot(): void
+    public function boot()
     {
-        parent::boot();
-        
         \Pimcore::setKernel($this);
+
+        parent::boot();
     }
 }

@@ -16,7 +16,7 @@ Feature: Adding a import with a cleaner
     And  the import-definitions mapping is:
       | fromColumn | toColumn    | primary |
       | name       | name        | true    |
-      | published  | published | false   |
+      | published  | o_published | false   |
     And there is a file test.csv with content:
       """
       name,published

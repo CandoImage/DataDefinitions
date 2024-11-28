@@ -31,7 +31,7 @@ use Wvision\Bundle\DataDefinitionsBundle\Fetcher\CustomFetcherInterface;
 use Wvision\Bundle\DataDefinitionsBundle\Model\ExportDefinitionInterface;
 use Wvision\Bundle\DataDefinitionsBundle\Model\ExportMapping\FromColumn;
 
-class ExportDefinitionController extends AbstractDefinitionController
+class ExportDefinitionController extends ResourceController
 {
     public function getConfigAction(): JsonResponse
     {
@@ -563,37 +563,37 @@ class ExportDefinitionController extends AbstractDefinitionController
 
     protected function getConfigProviders(): array
     {
-        return $this->getParameter('data_definitions.export_providers');
+        return $this->container->getParameter('data_definitions.export_providers');
     }
 
     protected function getConfigInterpreters(): array
     {
-        return $this->getParameter('data_definitions.interpreters');
+        return $this->container->getParameter('data_definitions.interpreters');
     }
 
     protected function getConfigRunners(): array
     {
-        return $this->getParameter('data_definitions.export_runners');
+        return $this->container->getParameter('data_definitions.export_runners');
     }
 
     protected function getConfigGetters(): array
     {
-        return $this->getParameter('data_definitions.getters');
+        return $this->container->getParameter('data_definitions.getters');
     }
 
     protected function getConfigFetchers(): array
     {
-        return $this->getParameter('data_definitions.fetchers');
+        return $this->container->getParameter('data_definitions.fetchers');
     }
 
     protected function getImportRuleConditions(): array
     {
-        return $this->getParameter('data_definitions.import_rule.conditions');
+        return $this->container->getParameter('data_definitions.import_rule.conditions');
     }
 
     protected function getImportRuleActions(): array
     {
-        return $this->getParameter('data_definitions.import_rule.actions');
+        return $this->container->getParameter('data_definitions.import_rule.actions');
     }
 
     protected function getConfigCustomFetchers(): array

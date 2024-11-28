@@ -24,28 +24,49 @@ use function count;
 use function in_array;
 use function is_array;
 
-class Dao extends Model\Dao\PimcoreLocationAwareConfigDao
+class Dao extends Model\Dao\PhpArrayTable
 {
-    private const CONFIG_KEY = 'export_definitions';
-
     /**
      * Configure Configuration File
      */
-    public function configure(): void
+    public function configure()
     {
-        $config = \Pimcore::getContainer()->getParameter('data_definitions.config_location');
-        $definitions = \Pimcore::getContainer()->getParameter('data_definitions.export_definitions');
-
-        $storageConfig = $config[self::CONFIG_KEY];
-
-        parent::configure([
-            'containerConfig' => $definitions,
-            'settingsStoreScope' => 'data_definitions',
-            'storageConfig' => $storageConfig,
-        ]);
+        parent::configure();
+        $this->setFile('exportdefinitions');
     }
 
-    protected function assignVariablesToModel($data): void
+    /**
+     * Get Configuration By Id
+     *
+     * @param null $id
+     * @throws Exception
+     */
+    public function getById($id = null)
+    {
+        if ($id !== null) {
+            $this->model->setId($id);
+        }
+
+        $data = $this->db->getById($this->model->getId());
+
+        if (isset($data['id'])) {
+            $this->assignVariablesToModel($data);
+        } else {
+            throw new InvalidArgumentException(
+                sprintf(
+                    'Export Definition with id: %s does not exist',
+                    $this->model->getId()
+                )
+            );
+        }
+    }
+
+    /**
+     * @param array $data
+     * @return void
+     * @throws Exception
+     */
+    protected function assignVariablesToModel($data)
     {
         parent::assignVariablesToModel($data);
 
@@ -73,26 +94,27 @@ class Dao extends Model\Dao\PimcoreLocationAwareConfigDao
      * @param null $name
      * @throws Exception
      */
-    public function getByName(string $id = null): void
+    public function getByName($name = null)
     {
-        if ($id != null) {
-            $this->model->setName($id);
+        if ($name !== null) {
+            $this->model->setName($name);
         }
 
-        $data = $this->getDataByName($this->model->getName());
+        $name = $this->model->getName();
 
-        if ($data && $id != null) {
-            $data['id'] = $id;
-        }
+        $data = $this->db->fetchAll(function ($row) use ($name) {
+            return $row['name'] === $name;
+        });
 
-        if ($data) {
-            $this->assignVariablesToModel($data);
-            $this->model->setName($data['id']);
+        if ($data[0]['id'] && count($data)) {
+            $this->assignVariablesToModel($data[0]);
         } else {
-            throw new Model\Exception\NotFoundException(sprintf(
-                'Thumbnail with ID "%s" does not exist.',
-                $this->model->getName()
-            ));
+            throw new InvalidArgumentException(
+                sprintf(
+                    'Definition with name: %s does not exist',
+                    $this->model->getName()
+                )
+            );
         }
     }
 
@@ -109,59 +131,56 @@ class Dao extends Model\Dao\PimcoreLocationAwareConfigDao
         }
         $this->model->setModificationDate($ts);
 
-        $dataRaw = get_object_vars($this->model);
-        $data = [];
-        $allowedProperties = [
-            'name',
-            'provider',
-            'class',
-            'configuration',
-            'creationDate',
-            'modificationDate',
-            'mapping',
-            'runner',
-            'stopOnException',
-            'enableInheritance',
-            'fetchUnpublished',
-            'failureNotificationDocument',
-            'successNotificationDocument',
-            'fetcher',
-            'fetcherConfig',
-        ];
+        try {
+            $dataRaw = get_object_vars($this->model);
+            $data = [];
+            $allowedProperties = [
+                'id',
+                'name',
+                'provider',
+                'class',
+                'configuration',
+                'creationDate',
+                'modificationDate',
+                'mapping',
+                'runner',
+                'stopOnException',
+                'fetchUnpublished',
+                'failureNotificationDocument',
+                'successNotificationDocument',
+                'fetcher',
+                'fetcherConfig',
+            ];
 
-        foreach ($dataRaw as $key => $value) {
-            if (in_array($key, $allowedProperties, true)) {
-                if ($key === 'providerConfiguration') {
-                    if ($value) {
-                        $data[$key] = get_object_vars($value);
-                    }
-                } elseif ($key === 'mapping') {
-                    if ($value) {
-                        $data[$key] = array();
+            foreach ($dataRaw as $key => $value) {
+                if (in_array($key, $allowedProperties, true)) {
+                    if ($key === 'providerConfiguration') {
+                        if ($value) {
+                            $data[$key] = get_object_vars($value);
+                        }
+                    } elseif ($key === 'mapping') {
+                        if ($value) {
+                            $data[$key] = array();
 
-                        if (is_array($value)) {
-                            foreach ($value as $map) {
-                                $data[$key][] = get_object_vars($map);
+                            if (is_array($value)) {
+                                foreach ($value as $map) {
+                                    $data[$key][] = get_object_vars($map);
+                                }
                             }
                         }
+                    } else {
+                        $data[$key] = $value;
                     }
-                } else {
-                    $data[$key] = $value;
                 }
             }
+            $this->db->insertOrUpdate($data, $this->model->getId());
+        } catch (Exception $e) {
+            throw $e;
         }
-        $this->saveData($this->model->getName(), $data);
-    }
 
-    protected function prepareDataStructureForYaml(string $id, mixed $data): mixed
-    {
-        return [
-            'data_definitions' => [
-                'export_definitions' => [
-                    $id => $data,
-                ],
-            ],
-        ];
+        if (!$this->model->getId()) {
+            $this->model->setId($this->db->getLastInsertId());
+        }
     }
 
     /**
@@ -170,6 +189,6 @@ class Dao extends Model\Dao\PimcoreLocationAwareConfigDao
      */
     public function delete()
     {
-        $this->deleteData($this->model->getName());
+        $this->db->delete($this->model->getId());
     }
 }

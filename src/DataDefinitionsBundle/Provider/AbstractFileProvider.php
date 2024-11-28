@@ -67,11 +67,11 @@ abstract class AbstractFileProvider
     {
         if (is_string($stream)) {
             $src = fopen($stream, 'rb');
-            $fileExtension = pathinfo($stream, PATHINFO_EXTENSION);
+            $fileExtension = File::getFileExtension($stream);
         } else {
             $src = $stream;
             $streamMeta = stream_get_meta_data($src);
-            $fileExtension = pathinfo($streamMeta['uri'], PATHINFO_EXTENSION);
+            $fileExtension = File::getFileExtension($streamMeta['uri']);
         }
 
         $tmpFilePath = File::getLocalTempFilePath($fileExtension);

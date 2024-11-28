@@ -16,31 +16,52 @@ declare(strict_types=1);
 
 namespace Wvision\Bundle\DataDefinitionsBundle\Model\ExportDefinition\Listing;
 
+use Exception;
+use Pimcore;
 use Wvision\Bundle\DataDefinitionsBundle\Model\ExportDefinition;
 use function count;
 
-class Dao extends ExportDefinition\Dao
+class Dao extends Pimcore\Model\Dao\PhpArrayTable
 {
-    public function loadList(): array
+    /**
+     * Configure
+     */
+    public function configure()
     {
-        $definitions = [];
-        foreach ($this->loadIdList() as $name) {
-            $definitions[] = ExportDefinition::getByName($name);
-        }
-
-        if ($this->model->getFilter()) {
-            $definitions = array_filter($definitions, $this->model->getFilter());
-        }
-        if ($this->model->getOrder()) {
-            usort($definitions, $this->model->getOrder());
-        }
-        $this->model->setObjects($definitions);
-
-        return $definitions;
+        parent::configure();
+        $this->setFile('exportdefinitions');
     }
 
-    public function getTotalCount(): int
+    /**
+     * Loads a list of Definitions for the specified parameters, returns an array of Definitions elements.
+     *
+     * @return array
+     * @throws Exception
+     */
+    public function load()
     {
-        return count($this->loadList());
+        $routesData = $this->db->fetchAll($this->model->getFilter(), $this->model->getOrder());
+
+        $routes = array();
+        foreach ($routesData as $routeData) {
+            $routes[] = ExportDefinition::getById($routeData['id']);
+        }
+
+        $this->model->setObjects($routes);
+
+        return $routes;
+    }
+
+    /**
+     * Get total count
+     *
+     * @return int
+     * @throws Exception
+     */
+    public function getTotalCount()
+    {
+        $data = $this->db->fetchAll($this->model->getFilter(), $this->model->getOrder());
+
+        return count($data);
     }
 }

@@ -21,10 +21,9 @@ use Wvision\Bundle\DataDefinitionsBundle\Context\InterpreterContextInterface;
 
 class TypeCastingInterpreter implements InterpreterInterface
 {
-    public const TYPE_INT = 'int';
-    public const TYPE_FLOAT = 'float';
-    public const TYPE_STRING = 'string';
-    public const TYPE_BOOLEAN = 'boolean';
+    protected const TYPE_INT = 'int';
+    protected const TYPE_STRING = 'string';
+    protected const TYPE_BOOLEAN = 'boolean';
 
     public function interpret(InterpreterContextInterface $context): mixed
     {
@@ -33,8 +32,6 @@ class TypeCastingInterpreter implements InterpreterInterface
         switch ($type) {
             case static::TYPE_INT:
                 return (int)$context->getValue();
-            case static::TYPE_FLOAT:
-                return (float)$context->getValue();
             case static::TYPE_STRING:
                 return (string)$context->getValue();
             case static::TYPE_BOOLEAN:
